@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
  * You have attempted to use an uninitialized feature. Initialize it properly.
  */
 
-public class MetalDriveKit {
+public class MetalProposal {
     private HardwareMap hwMap = null;
 
     Gamepad controller1 = null;
