@@ -30,22 +30,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 /* Allows hardware map to be used in other opmodes*/
 
 public class MultiDriveKit extends OpMode {
-   @Override
-   public void init() {
-       holonomicInit(hwMap);
-       //tankDriveInit(hwMap);
-   }
-    @Override
-    public void init_loop() {}
-    @Override
-    public void start() {}
-    @Override
-    public void loop() {
-       holonomicDrive();
-       //tankDrive();
-   }
-    @Override
-    public void stop() {}
 
     public Gamepad controller1 = gamepad1;
     public Gamepad controller2 = gamepad2;
@@ -73,71 +57,71 @@ public class MultiDriveKit extends OpMode {
 
         //function to swap controllers if dpad_down is true
         if (controller1.dpad_down) {
-        controllerSwap();
+            controllerSwap();
         }
         //increases speed with y
         if (controller1.y) {
-        increaseSpeed();
+            increaseSpeed();
         }
         //reduces speed with x
         if (controller1.x) {
-        reduceSpeed();
+            reduceSpeed();
         }
         //move commands
         if (controller1.left_stick_y == -1) {
-        holoMoveForward(power);
+            holoMoveForward(power);
         } else if (controller1.left_stick_y == 1) {
-        holoMoveBackward(power);
+            holoMoveBackward(power);
         } else if (controller1.left_stick_x == 1) {
-        holoMoveRight(power);
+            holoMoveRight(power);
         } else if (controller1.left_stick_x == -1) {
-        holoMoveLeft(power);
+            holoMoveLeft(power);
         }
 
 
     }
     public void tankDrive() {
-    if (controller1.dpad_down) {
+        if (controller1.dpad_down) {
             controllerSwap();
         }
         //increases speed with y
-    if (controller1.y) {
+        if (controller1.y) {
             increaseSpeed();
         }
         //reduces speed with x
-    if (controller1.x) {
+        if (controller1.x) {
             reduceSpeed();
         }
-     if (controller1.left_stick_y == -1) {
-     tankMoveForward(power);
-     } else if (controller1.left_stick_y == 1) {
-     tankMoveBackward(power);
-     }
+        if (controller1.left_stick_y == -1) {
+            tankMoveForward(power);
+        } else if (controller1.left_stick_y == 1) {
+            tankMoveBackward(power);
+        }
 
     }
 
     //----------------------------------------------------------------------------------------------
     //Tank Drive Functions
     public void tankMoveForward(double power) {
-     tankMotor1.setPower(power);
-     tankMotor2.setPower(power);
+        tankMotor1.setPower(power);
+        tankMotor2.setPower(power);
     }
     public void tankMoveBackward(double power) {
-     tankMotor1.setPower(-power);
-     tankMotor2.setPower(-power);
+        tankMotor1.setPower(-power);
+        tankMotor2.setPower(-power);
     }
     public void tankTurnClockwise(double power) {
-     tankMotor1.setPower(power);
-     tankMotor2.setPower(-power);
+        tankMotor1.setPower(power);
+        tankMotor2.setPower(-power);
     }
     public void tankTurnCounterClockwise(double power) {
-     tankMotor1.setPower(-power);
-     tankMotor1.setPower(power);
+        tankMotor1.setPower(-power);
+        tankMotor1.setPower(power);
     }
     //Controller Swap Function
     public void controllerSwap() {
-    controller1 = controller2;
-    controller2 = controller1;
+        controller1 = controller2;
+        controller2 = controller1;
     }
 
     //Speed Change Functions
@@ -196,11 +180,11 @@ public class MultiDriveKit extends OpMode {
     //----------------------------------------------------------------------------------------------
     public void holonomicInit (HardwareMap ahwMap){
 
-       hwMap = ahwMap;
-       motor1 = hwMap.dcMotor.get("motor1");
-       motor2 = hwMap.dcMotor.get("motor2");
-       motor3 = hwMap.dcMotor.get("motor3");
-       motor4 = hwMap.dcMotor.get("motor4");
+        hwMap = ahwMap;
+        motor1 = hwMap.dcMotor.get("motor1");
+        motor2 = hwMap.dcMotor.get("motor2");
+        motor3 = hwMap.dcMotor.get("motor3");
+        motor4 = hwMap.dcMotor.get("motor4");
 
         //Sets the motors to FORWARD direction, FORWARD=Clockwise, REVERSE=CounterClockwise
         motor1.setDirection(DcMotor.Direction.FORWARD); // MAY NEED TO CHANGE LATER (REVERSE)
@@ -270,5 +254,23 @@ public class MultiDriveKit extends OpMode {
         // Reset the cycle clock for the next pass.
         period.reset();
     }
+    @Override
+    public void init() {
+        holonomicInit(hwMap);
+        //tankDriveInit(hwMap);
+    }
+    @Override
+    public void init_loop() {}
+    @Override
+    public void start() {}
+    @Override
+    public void loop() {
+        holonomicDrive();
+        //tankDrive();
+    }
+    @Override
+    public void stop() {}
+
+
 }
 
