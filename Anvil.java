@@ -126,8 +126,8 @@ public class Anvil {
     }
     //Speed manipulatives
     public void reduceSpeed() {
-        if (prevailingSpeed == 0.5) {
-            prevailingSpeed = 0.35;
+        if (prevailingSpeed == 0.75) {
+            prevailingSpeed = 0.5;
         } else {
             prevailingSpeed = 0.25;
         }
@@ -144,9 +144,9 @@ public class Anvil {
     }
     public void increaseSpeed() {
         if (prevailingSpeed == 0.25) {
-            prevailingSpeed = 0.35;
-        } else {
             prevailingSpeed = 0.5;
+        } else {
+            prevailingSpeed = 0.75;
         }
         //You should have a trap loop to operate this function. A trap loop looks like this:
         /*
