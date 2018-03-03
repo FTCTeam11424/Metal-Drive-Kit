@@ -124,4 +124,39 @@ public class Anvil {
         motor3.setPower(-prevailingSpeed);
         motor4.setPower(prevailingSpeed);
     }
+    //Speed manipulatives
+    public void reduceSpeed() {
+        if (prevailingSpeed == 0.5) {
+            prevailingSpeed = 0.35;
+        } else {
+            prevailingSpeed = 0.25;
+        }
+        //You should have a trap loop to operate this function. A trap loop looks like this:
+        /*
+        while (controller.buttonUsedToIncreaseSpeed) {
+            if (!(controller.buttonUsedToIncreaseSpeed) {
+                break;
+            }
+        }
+        */
+        //This prevents the function from firing multiple times while the button is held.
+        //Even short presses lead to multiple executions.
+    }
+    public void increaseSpeed() {
+        if (prevailingSpeed == 0.25) {
+            prevailingSpeed = 0.35;
+        } else {
+            prevailingSpeed = 0.5;
+        }
+        //You should have a trap loop to operate this function. A trap loop looks like this:
+        /*
+        while (controller.buttonUsedToIncreaseSpeed) {
+            if (!(controller.buttonUsedToIncreaseSpeed) {
+                break;
+            }
+        }
+        */
+        //This prevents the function from firing multiple times while the button is held.
+        //Even short presses lead to multiple executions.
+    }
 }
