@@ -13,13 +13,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.HashMap;
-import java.util.concurrent.Callable;
 
 /**
  * Created by dcrenshaw on 1/27/18.
  *
  * The Metal Drive Kit is a framework for connecting directly to the robot hardware for driving.
  * Metal is intended to be a more feature-rich replacement for existing drive proxy functions.
+ * NOTE: This version of Metal requires lambda functions to work properly. A legacy version may be
+ * implemented using runnables.
  */
 /* Bug guide
  * Errors:
@@ -28,22 +29,17 @@ import java.util.concurrent.Callable;
  */
 
 public class MetalDriveKit {
-    //Define servo and motor variables and set them to null
-    public DcMotor motor1 = null;
-    public DcMotor motor2 = null;
-    public DcMotor motor3 = null;
-    public DcMotor motor4 = null;
-    public DcMotor clawMotor = null;
-    public Servo servo1 = null;
-    public Servo servo2 = null;
-    public Servo jewelServo = null;
+    //Define servo and motor variables
+    public DcMotor motor1, motor2, motor3, motor4;
+    public DcMotor clawMotor;
+    public Servo servo1, servo2;
+    public Servo jewelServo;
     //Reference to mapped servo/motor controller
-    private HardwareMap hwMap = null;
+    private HardwareMap hwMap;
 
-    Gamepad controller1 = null;
-    Gamepad controller2 = null;
+    public Gamepad controller1, controller2;
 
-    Thread controllerServer = null;
+    public Thread controllerServer;
 
     private double prevailingSpeed = 0.35;
 
@@ -51,7 +47,7 @@ public class MetalDriveKit {
 
     private ElapsedTime period = new ElapsedTime();
 
-    VuforiaLocalizer vuforia;
+    public VuforiaLocalizer vuforia;
 
     public void init (HardwareMap ahwMap) {
         hwMap = ahwMap;
@@ -102,75 +98,18 @@ public class MetalDriveKit {
         motor4.setPower(npower);
     }
     public void setMapCtlr1() {
-        intents.put("ctlr_1_x", new Runnable() {
-            @Override
-            public void run() {
-                prevailingSpeed = 1;
-            }
-        });
-        intents.put("ctlr_1_y", new Runnable() {
-            @Override
-            public void run() {
-                prevailingSpeed = 0.5;
-            }
-        });
-        intents.put("ctlr_1_b", new Runnable() {
-            @Override
-            public void run() {
-                prevailingSpeed = 0.35;
-            }
-        });
-        intents.put("ctlr_1_a", new Runnable() {
-            @Override
-            public void run() {
-                prevailingSpeed = 0.25;
-            }
-        });
-        intents.put("rbt_mov_right", new Runnable() {
-            @Override
-            public void run() {
-                moveRight();
-            }
-        });
-        intents.put("rbt_rest", new Runnable() {
-            @Override
-            public void run() {
-                rest();
-            }
-        });
-        intents.put("rbt_mov_left", new Runnable() {
-            @Override
-            public void run() {
-                moveLeft();
-            }
-        });
-        intents.put("rbt_mov_forward", new Runnable() {
-            @Override
-            public void run() {
-                moveForward();
-            }
-        });
-        intents.put("rbt_mov_backward", new Runnable() {
-            @Override
-            public void run() {
-                moveBackward();
-            }
-        });
-        intents.put("rbt_trn_right", new Runnable() {
-            @Override
-            public void run() {
-                turnRight();
-            }
-        });
-        intents.put("rbt_trn_left", new Runnable() {
-            @Override
-            public void run() {
-                turnLeft();
-            }
-        });
-        intents.put("serve_controller_movement", new Runnable() { //Handles controller input for robot movement
-            @Override
-            public void run() {
+        intents.put("ctlr_1_x", () -> prevailingSpeed = 1 );
+        intents.put("ctlr_1_y", () -> prevailingSpeed = 0.5 );
+        intents.put("ctlr_1_b", () -> prevailingSpeed = 0.35 );
+        intents.put("ctlr_1_a", () -> prevailingSpeed = 0.25 );
+        intents.put("rbt_mov_right", () -> moveRight() );
+        intents.put("rbt_rest", () -> rest() );
+        intents.put("rbt_mov_left", () -> moveLeft() );
+        intents.put("rbt_mov_forward", () -> moveForward() );
+        intents.put("rbt_mov_backward", () -> moveBackward() );
+        intents.put("rbt_trn_right", () -> turnRight() );
+        intents.put("rbt_trn_left", () -> turnLeft() );
+        intents.put("serve_controller_movement", () -> { //Handles controller input for robot movement
                 controllerServer = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -178,16 +117,8 @@ public class MetalDriveKit {
                     }
                 });
                 controllerServer.start();
-            }
         });
-        intents.put("stop_serving", new Runnable() {
-            @Override
-            public void run() {
-                if (controllerServer != null) {
-                    controllerServer.interrupt();
-                }
-            }
-        });
+        intents.put("stop_serving", () -> {if (controllerServer != null) {controllerServer.interrupt();}});
     }
     public void waitForTick(long periodMs) {
         long remaining = periodMs - (long) period.milliseconds();
@@ -202,15 +133,9 @@ public class MetalDriveKit {
         //Reset the cycle clock for the next pass
         period.reset();
     }
-    public void moveForward() {
-        setMotors(prevailingSpeed);
-    }
-    public void rest() {
-        setMotors(0);
-    }
-    public void moveBackward() {
-        setMotors(-prevailingSpeed);
-    }
+    public void moveForward() { setMotors(prevailingSpeed); }
+    public void rest() { setMotors(0); }
+    public void moveBackward() { setMotors(-prevailingSpeed); }
     public void moveLeft() {
         motor1.setPower(-prevailingSpeed);
         motor2.setPower(prevailingSpeed);
@@ -241,6 +166,7 @@ public class MetalDriveKit {
         } else {
             prevailingSpeed = 0.25;
         }
+        //Set trap loop. Requires knowledge of caller.
     }
     public void increaseSpeed() {
         if (prevailingSpeed == 0.25) {
@@ -248,10 +174,30 @@ public class MetalDriveKit {
         } else {
             prevailingSpeed = 0.5;
         }
+        //Set trap loop. Requires knowledge of caller.
     }
     public void sendMessage(String msg) {
         Runnable intent = intents.get(msg);
         intent.run();
+    }
+    public String getVuMark() {
+        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "AfdO5vj/////AAAAGSpM5tOflkvMvW4RzPkR14sF7ZtBXS06d04V0BL1s3kqEDkbvcN9uoHhoUg+hPC5pKqRAuhHfpPvv6sNrQgXO6gJaL3kzjIOlcOhx35mONJDaQ4lu3cYAxeNISUTaUkmlTajAcqhGeCLj+m+0lNjg2lF3UmfzocsFnwl8Oi6117s9MDLo3/HFTmYw/QLVnSsvdUW6GRg7jnDG1sJJmTXtOkgmbHAGrvqUSevnxjnEw9w2ME69SsbZof7/J3Xyl38xE1ekM8qn3/nC4CsQF5xJFJkbnI4h9aATJx5szNP1Zu1CSON4+WSzynZrd7H4zcVA3rQZvqEuMsQ5OlKsOlsIWdLctOLXSHTcXh7+1iXU+DS";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
+
+        //WARNING: This WILL block until it finds a valid instance of the pictogram.
+        //Run it concurrently or implement a call to turn it while it looks.
+        while (true) {
+            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                return vuMark.name();
+            }
+        }
     }
     public void intrpLoop() {
         if (Thread.currentThread().isInterrupted()) {
