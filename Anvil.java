@@ -35,8 +35,9 @@ public class Anvil {
     
     public boolean hs = true;
 
-    public void init (HardwareMap ahwMap, String type) throws Throwable {
+    public void init (HardwareMap ahwMap, String type, Telemtry telem) throws Throwable {
         hwMap = ahwMap;
+        telemetry = telem;
 
         //Define and connect variables to their matching motors on the robot
         clawMotor = hwMap.dcMotor.get("clawMotor");
