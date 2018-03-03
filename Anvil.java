@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.lang.Throwable;
 
 /**
@@ -22,12 +24,16 @@ public class Anvil {
     private HardwareMap hwMap;
 
     public Gamepad controller1, controller2;
+    
+    public Telemetry telemetry;
 
     private double prevailingSpeed = 0.35;
 
     public DcMotor[] forward;
     public DcMotor[] right;
     public DcMotor[] left;
+    
+    public boolean hs = true;
 
     public void init (HardwareMap ahwMap, String type) throws Throwable {
         hwMap = ahwMap;
@@ -57,29 +63,18 @@ public class Anvil {
                 motor2.setDirection(DcMotor.Direction.REVERSE);
                 motor3.setDirection(DcMotor.Direction.FORWARD);
                 motor4.setDirection(DcMotor.Direction.REVERSE);
-                //Rest all motors
-                motor1.setPower(0);
-                motor2.setPower(0);
-                motor3.setPower(0);
-                motor4.setPower(0);
-                //Set all motors to run without encoders
-                motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor4.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                //Set motor purposes
                 forward = new DcMotor[]{motor1, motor2, motor3, motor4};
                 right = new DcMotor[]{motor2, motor4};
                 left = new DcMotor[]{motor1, motor3};
+                hs = false;
+                telemetry.addLine("You are using an unoptimized drive system for Holonomic. Please use Metal.");
                 break;
             case "TANK":
                 motor1 = hwMap.dcMotor.get("motor1");
                 motor2 = hwMap.dcMotor.get("motor2");
                 motor1.setDirection(DcMotor.Direction.FORWARD);
                 motor2.setDirection(DcMotor.Direction.FORWARD);
-                motor1.setPower(0);
-                motor2.setPower(0);
-                motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 forward = new DcMotor[]{motor1, motor2};
                 right = new DcMotor[]{motor2};
                 left = new DcMotor[]{motor1};
@@ -87,33 +82,34 @@ public class Anvil {
             default:
                 throw new Throwable("Invalid type passed to Anvil's init function.");
         }
+        for (DcMotor x : forward) {x.setPower(0); x.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
     }
     //Movement and turning methods compatible with all drive trains
     public void moveForward() {
-        for (DcMotor x : forward) {
-            x.setPower(prevailingSpeed);
-        }
+        for (DcMotor x : forward) x.setPower(prevailingSpeed);
     }
     public void turnRight() {
-        for (DcMotor x : right) {
-            x.setPower(-prevailingSpeed / 2);
+        if (hs) {
+            for (DcMotor x : right) x.setPower(-prevailingSpeed / 2);
+            for (DcMotor x : left) x.setPower(prevailingSpeed / 2);
         }
-        for (DcMotor x : left) {
-            x.setPower(prevailingSpeed / 2);
+        else {
+            for (DcMotor x : right) x.setPower(-prevailingSpeed);
+            for (DcMotor x : left) x.setPower(prevailingSpeed);
         }
     }
     public void turnLeft() {
-        for (DcMotor x : left) {
-            x.setPower(-prevailingSpeed / 2);
+        if (hs) {
+            for (DcMotor x : left) x.setPower(-prevailingSpeed / 2);
+            for (DcMotor x : right) x.setPower(prevailingSpeed / 2);
         }
-        for (DcMotor x : right) {
-            x.setPower(prevailingSpeed / 2);
+        else {
+            for (DcMotor x : left) x.setPower(-prevailingSpeed);
+            for (DcMotor x : right) x.setPower(prevailingSpeed);
         }
     }
     public void moveBackward() {
-        for (DcMotor x : forward) {
-            x.setPower(-prevailingSpeed);
-        }
+        for (DcMotor x : forward) x.setPower(-prevailingSpeed);
     }
     //Holonomic specific movements
     public void holoMoveRight() {
