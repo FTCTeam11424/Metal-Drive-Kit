@@ -98,27 +98,25 @@ public class MetalDriveKit {
         motor4.setPower(npower);
     }
     public void setMapCtlr1() {
-        intents.put("ctlr_1_x", () -> prevailingSpeed = 1 );
-        intents.put("ctlr_1_y", () -> prevailingSpeed = 0.5 );
-        intents.put("ctlr_1_b", () -> prevailingSpeed = 0.35 );
-        intents.put("ctlr_1_a", () -> prevailingSpeed = 0.25 );
-        intents.put("rbt_mov_right", () -> moveRight() );
-        intents.put("rbt_rest", () -> rest() );
-        intents.put("rbt_mov_left", () -> moveLeft() );
-        intents.put("rbt_mov_forward", () -> moveForward() );
-        intents.put("rbt_mov_backward", () -> moveBackward() );
-        intents.put("rbt_trn_right", () -> turnRight() );
-        intents.put("rbt_trn_left", () -> turnLeft() );
+        intents.put("ctlr_1_x", () -> prevailingSpeed = 1);
+        intents.put("ctlr_1_y", () -> prevailingSpeed = 0.5);
+        intents.put("ctlr_1_b", () -> prevailingSpeed = 0.35);
+        intents.put("ctlr_1_a", () -> prevailingSpeed = 0.25);
+        intents.put("rbt_mov_right", () -> moveRight());
+        intents.put("rbt_rest", rest);
+        intents.put("rbt_mov_left", () -> moveLeft());
+        intents.put("rbt_mov_forward", moveForward);
+        intents.put("rbt_mov_backward", moveBackward);
+        intents.put("rbt_trn_right", () -> turnRight());
+        intents.put("rbt_trn_left", () -> turnLeft());
         intents.put("serve_controller_movement", () -> { //Handles controller input for robot movement
                 controllerServer = new Thread(new Runnable() {
                     @Override
-                    public void run() {
-                        intrpLoop();
-                    }
+                    public void run() {intrpLoop();}
                 });
                 controllerServer.start();
         });
-        intents.put("stop_serving", () -> {if (controllerServer != null) {controllerServer.interrupt();}});
+        intents.put("stop_serving", () -> {if (controllerServer != null) controllerServer.interrupt();});
     }
     public void waitForTick(long periodMs) {
         long remaining = periodMs - (long) period.milliseconds();
@@ -133,14 +131,25 @@ public class MetalDriveKit {
         //Reset the cycle clock for the next pass
         period.reset();
     }
-    public void moveForward() { setMotors(prevailingSpeed); }
-    public void rest() { setMotors(0); }
-    public void moveBackward() { setMotors(-prevailingSpeed); }
+    public Runnable moveForward = () -> setMotors(prevailingSpeed);
+    public Runnable rest = () -> setMotors(0);
+    public Runnable moveBackward = () -> setMotors(-prevailingSpeed);
+    public void moveForward() {setMotors(prevailingSpeed);}
+    public void moveForward(double pace) {setMotors(pace);}
+    public void rest() {setMotors(0);}
+    public void moveBackward() {setMotors(-prevailingSpeed);}
+    public void moveBackward(double pace) {setMotors(-pace);}
     public void moveLeft() {
         motor1.setPower(-prevailingSpeed);
         motor2.setPower(prevailingSpeed);
         motor3.setPower(-prevailingSpeed);
         motor4.setPower(prevailingSpeed);
+    }
+    public void moveLeft(double pace) {
+        motor1.setPower(-pace);
+        motor2.setPower(pace);
+        motor3.setPower(-pace);
+        motor4.setPower(pace);
     }
     public void moveRight() {
         motor1.setPower(prevailingSpeed);
@@ -148,17 +157,35 @@ public class MetalDriveKit {
         motor3.setPower(prevailingSpeed);
         motor4.setPower(-prevailingSpeed);
     }
+    public void moveRight(double pace) {
+        motor1.setPower(pace);
+        motor2.setPower(-pace);
+        motor3.setPower(pace);
+        motor4.setPower(-pace);
+    }
     public void turnLeft() { //counterclockwise
         motor1.setPower(-prevailingSpeed);
         motor2.setPower(prevailingSpeed);
         motor3.setPower(prevailingSpeed);
         motor4.setPower(-prevailingSpeed);
     }
+    public void turnLeft(double pace) {
+        motor1.setPower(-pace);
+        motor2.setPower(pace);
+        motor3.setPower(pace);
+        motor4.setPower(-pace);
+    }
     public void turnRight() { //clockwise
         motor1.setPower(prevailingSpeed);
         motor2.setPower(-prevailingSpeed);
         motor3.setPower(-prevailingSpeed);
         motor4.setPower(prevailingSpeed);
+    }
+    public void turnRight(double pace) {
+        motor1.setPower(pace);
+        motor2.setPower(-pace);
+        motor3.setPower(-pace);
+        motor4.setPower(pace);
     }
     public void reduceSpeed() {
         if (prevailingSpeed == 0.5) {
@@ -176,10 +203,7 @@ public class MetalDriveKit {
         }
         //Set trap loop. Requires knowledge of caller.
     }
-    public void sendMessage(String msg) {
-        Runnable intent = intents.get(msg);
-        intent.run();
-    }
+    public void sendMessage(String msg) {intents.get(msg).run();}
     public String getVuMark() {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
