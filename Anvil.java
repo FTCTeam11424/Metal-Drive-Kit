@@ -199,4 +199,25 @@ public class Anvil {
         //Even short presses lead to multiple executions.
     }
     //SECTION: Competition specific code here.
+    public void distDeg(double initx, double inity, double posX, double posY) {
+        double distance = Math.sqrt(2 * (inity - posY) * (initx - posX));
+        double degrees = Math.atan((inity - posY) / (initx - posX));
+        double distDeg[] = {degrees, distance};
+        if (inity < posY & initx > posX) {
+            degrees = degrees + 180 + 2 * degrees;
+        } else if (inity < posY & initx < posX) {
+            degrees = degrees + 180;
+        } else if (inity > posY & initx < posX) {
+            degrees = 2 * degrees;
+        }
+
+        int circumference = 1; //Still unknown.
+        int target = (int)Math.round(distance/circumference*420);
+        for (DcMotor x : forward) {
+            x.setMode(DcMotor.RunMode.RESET_ENCODERS);
+            x.setTargetPosition(target);
+            x.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        //Incomplete
+    }
 }
