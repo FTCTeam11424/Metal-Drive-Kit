@@ -11,6 +11,7 @@ It is important to know that new technologies tend to appear first in Metal for 
 Another project is the MultiDriveKit, which focuses more on being compatible with multiple drivetrains.
 The MultiDriveKit incorporates some of the functions of MetalDriveKit, more focused on being compatible with multiple drivetrains. Similar to Metal, it can be used as a library or a regular opmode.
 
+Has now been replaced with a more efficient program, Anvil.
 
 
 ## Anvil
