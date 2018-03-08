@@ -173,7 +173,7 @@ public class Anvil {
         //You should have a trap loop to operate this function. A trap loop looks like this:
         /*
         while (controller.buttonUsedToIncreaseSpeed) {
-            if (!(controller.buttonUsedToIncreaseSpeed) {
+            if (!(controller.buttonUsedToIncreaseSpeed)) {
                 break;
             }
         }
@@ -190,7 +190,7 @@ public class Anvil {
         //You should have a trap loop to operate this function. A trap loop looks like this:
         /*
         while (controller.buttonUsedToIncreaseSpeed) {
-            if (!(controller.buttonUsedToIncreaseSpeed) {
+            if (!(controller.buttonUsedToIncreaseSpeed)) {
                 break;
             }
         }
@@ -204,15 +204,15 @@ public class Anvil {
         double degrees = Math.atan((inity - posY) / (initx - posX));
         double distDeg[] = {degrees, distance};
         if (inity < posY & initx > posX) {
-            degrees = degrees + 180 + 2 * degrees;
+            degrees += 180 + 2 * degrees;
         } else if (inity < posY & initx < posX) {
-            degrees = degrees + 180;
+            degrees += 180;
         } else if (inity > posY & initx < posX) {
-            degrees = 2 * degrees;
+            degrees *= 2;
         }
 
         int circumference = 1; //Still unknown.
-        int target = (int)Math.round(distance/circumference*420);
+        int target = (int)Math.round(distance/circumference*420); //This will currently always be 1 or 0. Did you mean ((distance/circumference)*420)?
         for (DcMotor x : forward) {
             x.setMode(DcMotor.RunMode.RESET_ENCODERS);
             x.setTargetPosition(target);
