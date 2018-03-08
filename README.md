@@ -11,10 +11,11 @@ It is important to know that new technologies tend to appear first in Metal for 
 Another project is the MultiDriveKit, which focuses more on being compatible with multiple drivetrains.
 The MultiDriveKit incorporates some of the functions of MetalDriveKit, more focused on being compatible with multiple drivetrains. Similar to Metal, it can be used as a library or a regular opmode.
 
-MultiDrive is not guaranteed to work or even run, and is known to have several problems. Use at your own risk.
+
 
 ## Anvil
 Anvil is the official derivative of Metal intended to handle multiple drive trains. It is optimized for none, but designed to work for all. It does not have the same feature-depth of Metal, but integrates smoothly into any codebase with a familiar interface which operates identically for every drive train. Anvil is also easily extensible for drive trains which have not yet been added.
 
 ## Clasp Teleop
 Clasp is a teleop developed for Anvil for use by the Thales Academy FTC Team 11424.
+ "is not guaranteed to work or even run, and is known to have several problems. Use at your own risk." 
