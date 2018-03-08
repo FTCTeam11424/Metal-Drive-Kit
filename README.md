@@ -20,4 +20,4 @@ Anvil is the official derivative of Metal intended to handle multiple drive trai
 ## Clasp Teleop
 Clasp is a teleop developed for Anvil for use by the Thales Academy FTC Team 11424. 
 
-"Is not guaranteed to work or even run, and is known to have several problems. Use at your own risk." 
+I was at least right. Tsk, tsk, Gabe.
