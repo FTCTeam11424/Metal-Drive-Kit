@@ -33,7 +33,7 @@ public class Anvil {
 
     public boolean hs = true;
 
-    public void init (HardwareMap ahwMap, String type, Telemetry telem) throws Throwable {
+    public void init (HardwareMap ahwMap, String type, Telemetry telem){
         hwMap = ahwMap;
 
         telemetry = telem;
@@ -86,7 +86,7 @@ public class Anvil {
                 left = new DcMotor[]{motor1, motor3};
                 break;
             default:
-                throw new Throwable("Invalid type passed to Anvil's init function.");
+                telemetry.addLine("Invalid type " + type + " passed to Anvil's init function. Nothing has been set up.");
         }
         for (DcMotor x : forward) {x.setPower(0); x.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
     }
@@ -137,6 +137,12 @@ public class Anvil {
     public void moveBackward(double pace) {for (DcMotor x:forward) x.setPower(-pace);}
 
     public void rest() {for (DcMotor x:forward) x.setPower(0);}
+    
+    //Experimental function to turn while moving forward
+    public void diff(double ctx, double pace) {
+        for (DcMotor x:left) x.setPower(pace - (ctx / 2));
+        for (DcMotor x:right) x.setPower(pace + (ctx / 2));
+    }
 
     //Holonomic specific movements
     public void holoMoveRight() {
@@ -212,7 +218,7 @@ public class Anvil {
         }
 
         int circumference = 1; //Still unknown.
-        int target = (int)Math.round(distance/circumference*420); //This will currently always be 1 or 0. Did you mean ((distance/circumference)*420)?
+        int target = (int)Math.round(distance/circumference*420);
         for (DcMotor x : forward) {
             x.setMode(DcMotor.RunMode.RESET_ENCODERS);
             x.setTargetPosition(target);
