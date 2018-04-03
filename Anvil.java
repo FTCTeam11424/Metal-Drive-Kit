@@ -2,16 +2,19 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.lang.Throwable;
-
 /**
  * Created by dcrenshaw on 3/3/18.
  * Extensible class derived from Metal. Used to invoke Metal upon drive trains other than Holonomic
+ */
+/*
+ * DEPRECATION NOTICE:
+ * Segmented speed system has been removed in favor of externally controlled speed systems.
  */
 
 public class Anvil {
@@ -85,24 +88,50 @@ public class Anvil {
                 right = new DcMotor[]{motor2, motor4};
                 left = new DcMotor[]{motor1, motor3};
                 break;
+            /*
+            case "AUTO":
+                // Scans robot hardware and makes an educated guess at drive train specifics
+                //INCOMPLETE - POTENTIALLY ABANDONED
+                for (Iterator x = hwMap.iterator(); x.hasNext();) {
+
+                }
+            */
             default:
                 telemetry.addLine("Invalid type " + type + " passed to Anvil's init function. Nothing has been set up.");
+                break;
+            /*Example drive train:
+            case "TRAIN_NAME":
+                //Map all motors to proper variables.
+                motor1 = hwMap.dcMotor.get("motor1");
+                motor2 = hwMap.dcMotor.get("motor2");
+                //Set motor directions. These should all be set so that power 1 for all
+                //motors == robot moves forwards.
+                motor1.setDirection(DcMotor.Direction.FORWARD);
+                motor2.setDirection(DcMotor.Direction.REVERSE);
+                //Set motor purposes for maneuvers. Motors in 'right' are the motors which must
+                //move in reverse for the robot to turn right, and the same applies for left.
+                //'forward' should contain all motors.
+                forward = new DcMotor[]{motor1, motor2};
+                right = new DcMotor[]{motor2};
+                left = new DcMotor[]{motor1};
+                break;
+             */
         }
         for (DcMotor x : forward) {x.setPower(0); x.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
     }
-    //Movement and turning methods compatible with all drive trains
-    public void moveForward() {for (DcMotor x:forward) x.setPower(prevailingSpeed);}
-    public void moveForward(double pace) {for (DcMotor x:forward) x.setPower(pace);}
-    public void turnRight() {
-        if (hs) {
-            for (DcMotor x:right) x.setPower(-prevailingSpeed / 2);
-            for (DcMotor x:left) x.setPower(prevailingSpeed / 2);
-        }
-        else {
-            for (DcMotor x:right) x.setPower(-prevailingSpeed);
-            for (DcMotor x:left) x.setPower(prevailingSpeed);
+    public void initCustom(HardwareMap ahwMap, Telemetry telem, DcMotor[] rightI, DcMotor[] leftI, DcMotor[] forwardI, DcMotor.Direction[] orderedDirections) {
+        //Allows initialization of custom drive trains not in list programatically.
+        telemetry = telem;
+        hwMap = ahwMap;
+        right = rightI;
+        left = leftI;
+        forward = forwardI;
+        for (int x = 0; x < forward.length; x++) {
+            forward[x].setDirection(orderedDirections[x]);
         }
     }
+    //Movement and turning methods compatible with all drive trains
+    public void moveForward(double pace) {for (DcMotor x:forward) x.setPower(pace);}
     public void turnRight(double pace) {
         if (hs) {
             for (DcMotor x:right) x.setPower(-pace / 2);
@@ -111,16 +140,6 @@ public class Anvil {
         else {
             for (DcMotor x:right) x.setPower(-pace);
             for (DcMotor x:left) x.setPower(pace);
-        }
-    }
-    public void turnLeft() {
-        if (hs) {
-            for (DcMotor x:left) x.setPower(-prevailingSpeed / 2);
-            for (DcMotor x:right) x.setPower(prevailingSpeed / 2);
-        }
-        else {
-            for (DcMotor x:left) x.setPower(-prevailingSpeed);
-            for (DcMotor x:right) x.setPower(prevailingSpeed);
         }
     }
     public void turnLeft(double pace) {
@@ -133,11 +152,10 @@ public class Anvil {
             for (DcMotor x:right) x.setPower(pace);
         }
     }
-    public void moveBackward() {for (DcMotor x:forward) x.setPower(-prevailingSpeed);}
     public void moveBackward(double pace) {for (DcMotor x:forward) x.setPower(-pace);}
 
     public void rest() {for (DcMotor x:forward) x.setPower(0);}
-    
+
     //Experimental function to turn while moving forward
     public void diff(double ctx, double pace) {
         for (DcMotor x:left) x.setPower(pace - (ctx / 2));
@@ -168,41 +186,6 @@ public class Anvil {
         motor2.setPower(pace);
         motor3.setPower(-pace);
         motor4.setPower(pace);
-    }
-    //Speed manipulatives
-    public void reduceSpeed() {
-        if (prevailingSpeed == 0.75) {
-            prevailingSpeed = 0.5;
-        } else {
-            prevailingSpeed = 0.25;
-        }
-        //You should have a trap loop to operate this function. A trap loop looks like this:
-        /*
-        while (controller.buttonUsedToIncreaseSpeed) {
-            if (!(controller.buttonUsedToIncreaseSpeed)) {
-                break;
-            }
-        }
-        */
-        //This prevents the function from firing multiple times while the button is held.
-        //Even short presses lead to multiple executions.
-    }
-    public void increaseSpeed() {
-        if (prevailingSpeed == 0.25) {
-            prevailingSpeed = 0.5;
-        } else {
-            prevailingSpeed = 0.75;
-        }
-        //You should have a trap loop to operate this function. A trap loop looks like this:
-        /*
-        while (controller.buttonUsedToIncreaseSpeed) {
-            if (!(controller.buttonUsedToIncreaseSpeed)) {
-                break;
-            }
-        }
-        */
-        //This prevents the function from firing multiple times while the button is held.
-        //Even short presses lead to multiple executions.
     }
     //SECTION: Competition specific code here.
     public void distDeg(double initx, double inity, double posX, double posY) {
