@@ -18,6 +18,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 public class ClaspTeleop extends OpMode {
+   
+   //This must be modified before it is ready for use. it makes broken assumptions.
+   
     public Anvil metal;
 
     public boolean speedMode = true;
