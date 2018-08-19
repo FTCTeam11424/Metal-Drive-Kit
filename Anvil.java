@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 /**
  * Created by dcrenshaw on 3/3/18.
  * Extensible class derived from Metal. Used to invoke Metal upon drive trains other than Holonomic
@@ -28,7 +26,7 @@ public class Anvil {
 
     public Gamepad controller1, controller2;
 
-    public Telemetry telemetry;
+    public NXTeleManager telemetry;
 
     private double prevailingSpeed = 0.5;
 
@@ -36,7 +34,10 @@ public class Anvil {
 
     public boolean hs = true;
 
-    public void init (HardwareMap ahwMap, String type, Telemetry telem){
+    public Anvil(HardwareMap ahwMap, String type, NXTeleManager telem) {
+        //this will indicate a successful init even if no drivetrain was specified
+        //somewhat counterintuitive, but better than setting a flag in memory and checking on exit
+
         hwMap = ahwMap;
 
         telemetry = telem;
@@ -64,7 +65,6 @@ public class Anvil {
                 right = new DcMotor[]{motor2, motor4};
                 left = new DcMotor[]{motor1, motor3};
                 hs = false;
-                telemetry.addLine("You are using an unoptimized drive system for Holonomic. Please use Metal.");
                 break;
             case "TANK":
                 motor1 = hwMap.dcMotor.get("motor1");
@@ -97,7 +97,7 @@ public class Anvil {
                 }
             */
             default:
-                telemetry.addLine("Invalid type " + type + " passed to Anvil's init function. Nothing has been set up.");
+                telemetry.log_e("Anvil", "Drive train not specified or nonexistent. This will probably crash.");
                 break;
             /*Example drive train:
             case "TRAIN_NAME":
@@ -110,7 +110,7 @@ public class Anvil {
                 motor2.setDirection(DcMotor.Direction.REVERSE);
                 //Set motor purposes for maneuvers. Motors in 'right' are the motors which must
                 //move in reverse for the robot to turn right, and the same applies for left.
-                //'forward' should contain all motors.
+                //'forward' should contain all motors used for driving.
                 forward = new DcMotor[]{motor1, motor2};
                 right = new DcMotor[]{motor2};
                 left = new DcMotor[]{motor1};
@@ -118,9 +118,11 @@ public class Anvil {
              */
         }
         for (DcMotor x : forward) {x.setPower(0); x.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);}
+        telemetry.log("Anvil", "Initialization successful.");
     }
-    public void initCustom(HardwareMap ahwMap, Telemetry telem, DcMotor[] rightI, DcMotor[] leftI, DcMotor[] forwardI, DcMotor.Direction[] orderedDirections) {
-        //Allows initialization of custom drive trains not in list programatically.
+    public Anvil(HardwareMap ahwMap, NXTeleManager telem, DcMotor[] rightI, DcMotor[] leftI, DcMotor[] forwardI, DcMotor.Direction[] orderedDirections) {
+        //Allows initialization of custom drive trains not in list programmatically.
+        //This should only be used if absolutely necessary, e.g., in an automatic configurator.
         telemetry = telem;
         hwMap = ahwMap;
         right = rightI;
