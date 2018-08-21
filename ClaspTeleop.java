@@ -34,7 +34,7 @@ public class ClaspTeleop extends OpMode implements Gamepad.GamepadCallback {
     public void init() {
         try {
             metal = new Anvil(hardwareMap, "TANK", telemanager);
-            telemanager = new NXTeleManager(telemetry);
+            telemanager = NXTeleManager.init(telemetry);
             gamepad1 = new Gamepad(this); //fix gamepad1 to work with Clasp's callback
             telemanager.create("Speed-mode: ", "CAZ");
         }
