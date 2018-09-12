@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 public class ClaspTeleop extends OpMode implements Gamepad.GamepadCallback {
-    public Anvil metal; //hardware drive class
-    public NXTeleManager telemanager; //fancified telemetry manager
+    public NXTeleManager telemanager = new NXTeleManager(telemetry); //fancified telemetry manager
+    public Anvil metal = new Anvil(hardwareMap, "TANK", telemanager); //hardware drive class
     public String name = "Clasp";
 
     /*
@@ -32,15 +32,9 @@ public class ClaspTeleop extends OpMode implements Gamepad.GamepadCallback {
     public double[] zoneList = new double[]{0.35, 0.5, 0.75};
 
     public void init() {
-        try {
-            metal = new Anvil(hardwareMap, "TANK", telemanager);
-            telemanager = NXTeleManager.init(telemetry);
-            gamepad1 = new Gamepad(this); //fix gamepad1 to work with Clasp's callback
-            telemanager.create("Speed-mode: ", "CAZ");
-        }
-        catch (Throwable e) {
-
-        }
+        gamepad1 = new Gamepad(this); //fix gamepad1 to work with Clasp's callback
+        telemanager.create("Speed-mode: ", "CAZ");
+        telemanager.log_e("Clasp", e.getMessage());
     }
 
     public void loop() {
